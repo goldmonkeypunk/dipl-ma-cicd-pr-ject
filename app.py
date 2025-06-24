@@ -52,8 +52,11 @@ from auth import bp as auth_bp  # noqa: E402  (підіймаємо після �
 
 app.register_blueprint(auth_bp)
 
+
 # ─────────────────────────  ДОПОМІЖНІ ФУНКЦІЇ  ────────────────────────
-def month_info(year: int, month: int) -> tuple[list[dt.date], dt.date, dt.date]:
+def month_info(
+    year: int, month: int
+) -> tuple[list[dt.date], dt.date, dt.date]:
     days_cnt = calendar.monthrange(year, month)[1]
     dates = [dt.date(year, month, d) for d in range(1, days_cnt + 1)]
     return dates, dates[0], dates[-1]
@@ -95,11 +98,17 @@ def journal():
     )
 
     attend: Dict[int, Set[str]] = {s.id: set() for s in studs}
-    for a in Attendance.query.filter(Attendance.date.between(d_start, d_end)).all():
+    for a in Attendance.query.filter(
+        Attendance.date.between(d_start, d_end)
+    ).all():
         attend.setdefault(a.student_id, set()).add(a.date.isoformat())
 
     rows = [
-        {"id": s.id, "name": s.name, "month_sum": month_sum(s.id, d_start, d_end)}
+        {
+            "id": s.id,
+            "name": s.name,
+            "month_sum": month_sum(s.id, d_start, d_end),
+        }
         for s in studs
     ]
     return render_template(
@@ -124,7 +133,10 @@ def students():
     )
     catalog = Song.query.all()
     mapping: Dict[int, List[Song]] = {
-        s.id: [ps.song for ps in StudentSong.query.filter_by(student_id=s.id).all()]
+        s.id: [
+            ps.song
+            for ps in StudentSong.query.filter_by(student_id=s.id).all()
+        ]
         for s in studs
     }
     return render_template(
@@ -179,7 +191,9 @@ def add_student():
 @login_required
 def delete_student(sid: int):
     admin_required()
-    db.session.execute(delete(StudentSong).where(StudentSong.student_id == sid))
+    db.session.execute(
+        delete(StudentSong).where(StudentSong.student_id == sid)
+    )
     db.session.execute(delete(Attendance).where(Attendance.student_id == sid))
     db.session.execute(delete(Student).where(Student.id == sid))
     db.session.commit()
@@ -271,7 +285,9 @@ def seed_initial_data() -> None:
         ("come as you are", "Nirvana", 1),
         ("smells like teen spirit", "Nirvana", 1),
     ]
-    songs = {t: Song(title=t, author=a, difficulty=d) for t, a, d in songs_data}
+    songs = {
+        t: Song(title=t, author=a, difficulty=d) for t, a, d in songs_data
+    }
     db.session.add_all(songs.values())
     db.session.flush()
 
@@ -287,7 +303,9 @@ def seed_initial_data() -> None:
     for pupil, songlist in link.items():
         sid = students[pupil].id
         for title in songlist:
-            db.session.add(StudentSong(student_id=sid, song_id=songs[title].id))
+            db.session.add(
+                StudentSong(student_id=sid, song_id=songs[title].id)
+            )
 
     db.session.commit()
 

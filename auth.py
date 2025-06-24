@@ -1,33 +1,39 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
-from flask_login import login_user, logout_user, login_required
-from werkzeug.security import generate_password_hash, check_password_hash
-from models import db, User
+from flask import Blueprint, flash, redirect, render_template, url_for
+from flask_login import login_required, login_user, logout_user
 from flask_wtf import FlaskForm
-from wtforms import EmailField, PasswordField, SubmitField, RadioField
+from werkzeug.security import check_password_hash, generate_password_hash
+from wtforms import EmailField, PasswordField, RadioField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, ValidationError
+
+from models import User, db
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 ADMIN_INVITE_CODE = "admin123"
 
+
 # ───── WTForms ─────
 class LoginForm(FlaskForm):
-    email    = EmailField("Email", validators=[DataRequired(), Email()])
+    email = EmailField("Email", validators=[DataRequired(), Email()])
     password = PasswordField("Пароль", validators=[DataRequired(), Length(6)])
-    submit   = SubmitField("Увійти")
+    submit = SubmitField("Увійти")
+
 
 class RegisterForm(FlaskForm):
-    email      = EmailField("Email", validators=[DataRequired(), Email()])
-    password   = PasswordField("Пароль", validators=[DataRequired(), Length(6)])
-    role       = RadioField("Роль",
-                            choices=[("parent","Батьки / Учень"),
-                                     ("teacher","Адмін")],
-                            default="parent", validators=[DataRequired()])
+    email = EmailField("Email", validators=[DataRequired(), Email()])
+    password = PasswordField("Пароль", validators=[DataRequired(), Length(6)])
+    role = RadioField(
+        "Роль",
+        choices=[("parent", "Батьки / Учень"), ("teacher", "Адмін")],
+        default="parent",
+        validators=[DataRequired()],
+    )
     admin_code = PasswordField("Код для адміна")
-    submit     = SubmitField("Зареєструватись")
+    submit = SubmitField("Зареєструватись")
 
     def validate_admin_code(form, field):
         if form.role.data == "teacher" and field.data != ADMIN_INVITE_CODE:
             raise ValidationError("Невірний admin‑код")
+
 
 # ───── routes ─────
 @bp.route("/login", methods=["GET", "POST"])
@@ -41,6 +47,7 @@ def login():
         flash("Невірний логін / пароль", "danger")
     return render_template("login.html", form=form)
 
+
 @bp.route("/register", methods=["GET", "POST"])
 def register():
     form = RegisterForm()
@@ -48,13 +55,17 @@ def register():
         if User.query.filter_by(email=form.email.data).first():
             flash("Email вже зареєстровано", "warning")
         else:
-            user = User(email=form.email.data,
-                        password=generate_password_hash(form.password.data),
-                        role=form.role.data)
-            db.session.add(user); db.session.commit()
-            login_user(user)                             # ← авто‑login
+            user = User(
+                email=form.email.data,
+                password=generate_password_hash(form.password.data),
+                role=form.role.data,
+            )
+            db.session.add(user)
+            db.session.commit()
+            login_user(user)  # ← авто‑login
             return redirect(url_for("journal"))
     return render_template("register.html", form=form)
+
 
 @bp.route("/logout")
 @login_required
