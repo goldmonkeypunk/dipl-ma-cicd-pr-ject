@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card-panel">
+
+<h2 class="mb-3">Учні</h2>
+
+{% if current_user.role=='teacher' %}
+<form id="addStudent" class="input-group mb-3" style="max-width:400px">
+  <input class="form-control" name="name" placeholder="Нове ім'я учня" required>
+  <button class="btn btn-primary">Додати</button>
+</form>
+{% endif %}
+
+<table class="table table-hover">
+  <thead class="table-light">
+    <tr><th>Ім'я</th><th>Пісні</th><th style="width:110px"></th></tr>
+  </thead>
+  <tbody>
+    {% for s in students %}
+    <tr id="stu-{{ s.id }}">
+      <td>{{ s.name }}</td>
+      <td>
+        {% if mapping[s.id] %}
+          {% for ps in mapping[s.id] %}
+            <span class="badge bg-info text-dark me-1">{{ ps.title }}</span>
+          {% endfor %}
+        {% else %}<span class="text-muted">—</span>{% endif %}
+        {% if current_user.role=='teacher' %}
+        <select class="form-select form-select-sm d-inline w-auto ms-2 song-select"
+                data-stu="{{ s.id }}">
+          <option selected disabled>Призначити…</option>
+          {% for song in songs %}
+            <option value="{{ song.id }}">{{ song.title }}</option>
+          {% endfor %}
+        </select>
+        {% endif %}
+      </td>
+      <td>
+        {% if current_user.role=='teacher' %}
+          <button class="btn btn-sm btn-outline-secondary me-1 edit-stu"
+                  onclick="alert('TODO: форма редагування');">✎</button>
+          <button class="btn btn-sm btn-outline-danger del-stu"
+                  data-id="{{ s.id }}">🗑</button>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+</div>
+<script src="{{ url_for('static', filename='app.js') }}" defer></script>
+  {% endblock %}

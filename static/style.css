@@ -1,0 +1,32 @@
+/* journal cells */
+.att{ cursor:pointer; user-select:none; }
+.att.table-success{ font-weight:bold; }
+
+/* CRUD buttons */
+.del-stu,.del-song,.edit-stu,.edit-song{ cursor:pointer; }
+
+/* cards */
+.card-panel{
+  background:#ffffff; border-radius:12px; padding:24px;
+  box-shadow:0 4px 10px rgba(0,0,0,.07);
+}
+[data-bs-theme="dark"] .card-panel{
+  background:#2b2e36; box-shadow:0 4px 10px rgba(0,0,0,.4);
+}
+
+/* hovers */
+.table-hover>tbody>tr:hover>*{
+  background-color:rgba(0,123,255,.08);
+}
+[data-bs-theme="dark"] .table-hover>tbody>tr:hover>*{
+  background-color:rgba(0,123,255,.15);
+}
+
+/* background */
+body{
+  background:linear-gradient(135deg,#eaf4ff 0%,#ffffff 60%,#e4edff 100%);
+  min-height:100vh;
+}
+[data-bs-theme="dark"] body{
+  background:linear-gradient(135deg,#1e1f24 0%,#202227 60%,#24262d 100%);
+}

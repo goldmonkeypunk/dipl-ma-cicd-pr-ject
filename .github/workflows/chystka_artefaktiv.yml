@@ -1,0 +1,14 @@
+name: Прибирання артефактів
+
+on:
+  schedule:
+    - cron: "15 */6 * * *"   # кожні 6 годин
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    permissions: { actions: write }
+    steps:
+      - uses: c-hive/gha-remove-artifacts@v1
+        with: { age: "7 days" }

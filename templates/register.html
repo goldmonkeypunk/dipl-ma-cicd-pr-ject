@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Реєстрація</h2>
+<form method="post">
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.email.label }}<br>
+        {{ form.email(size=32) }}
+    </p>
+    <p>
+        {{ form.password.label }}<br>
+        {{ form.password(size=32) }}
+    </p>
+    <p>
+        {{ form.role.label }}<br>
+        {{ form.role() }}
+    </p>
+    <p>{{ form.submit(class_="btn") }}</p>
+</form>
+
+<p>Вже маєте акаунт?
+   <a href="{{ url_for('login') }}">Увійти</a>
+</p>
+{% endblock %}

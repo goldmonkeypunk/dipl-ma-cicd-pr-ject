@@ -1,0 +1,36 @@
+{
+  "name": "flask-example-codespace",
+
+  // базовый compose + override для Codespace
+  "dockerComposeFile": [
+    "../docker-compose.yml",
+    "docker-compose.codespace.yml"
+  ],
+
+  // рабочий сервис – именно там лежит код
+  "service": "web-example",
+  "workspaceFolder": "/app",
+
+  // порт, который отдаёт Nginx наружу
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": { "label": "Flask (Nginx proxy)", "onAutoForward": "openPreview" }
+  },
+
+  // ставим Docker CLI (moby) внутрь dev‑контейнера
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "moby": "true"
+    }
+  },
+
+  // полезные расширения
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  }
+}

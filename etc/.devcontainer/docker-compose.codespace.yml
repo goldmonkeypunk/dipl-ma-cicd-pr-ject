@@ -1,0 +1,21 @@
+services:
+  # Flask‑приложение
+  web-example:
+    build:
+      context: ..                # корень репозитория
+      dockerfile: Dockerfile
+    command: >
+      gunicorn -k gevent --reload --workers 4 --bind :5000 app:app
+    expose:
+      - "5000"                   # остаётся внутренним, nginx проксирует
+    volumes:
+      - ..:/app:delegated        # live‑маунт исходников
+
+  # Nginx‑прокси
+  nginx:
+    image: nginx:latest
+    ports:
+      - "8080:8080"              # важно повторно перечислить массив ports
+    volumes:
+      - ..:/app:ro
+      - ../etc/nginx.conf:/etc/nginx/conf.d/default.conf:ro

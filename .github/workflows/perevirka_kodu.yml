@@ -1,0 +1,41 @@
+name: Перевірка коду (Lint | Black | Isort)
+
+on:
+  push:
+    paths: ["**/*.py", ".flake8", "pyproject.toml"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  flake8:
+    runs-on: ubuntu-latest
+    name: 🔎 flake8‑аналіз
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: |
+          pip install -r requirements-dev.txt
+          flake8 .
+
+  black:
+    runs-on: ubuntu-latest
+    name: 🎨 Black‑перевірка
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: |
+          pip install -r requirements-dev.txt
+          black --check .
+
+  isort:
+    runs-on: ubuntu-latest
+    name: 📐 Isort‑перевірка
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: |
+          pip install -r requirements-dev.txt
+          isort --check-only .

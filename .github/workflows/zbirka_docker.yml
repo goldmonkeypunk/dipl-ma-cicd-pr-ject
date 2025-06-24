@@ -1,0 +1,14 @@
+name: Збірка Docker‑образу
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*.*.*"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: 🏗️ docker build
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t flask-demo:${{ github.sha }} .

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1 class="mb-3">Журнал занять (поточний тиждень)</h1>
+
+<table class="table table-bordered align-middle text-center">
+  <thead class="table-light">
+    <tr>
+      <th class="text-start">Учень</th>
+      {% for d in days %}
+        <th>{{ d.strftime('%a') }}<br><small>{{ d.strftime('%d.%m') }}</small></th>
+      {% endfor %}
+      <th>₴ / тиж.</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for s in students %}
+    <tr id="row-{{ s.id }}">
+      <td class="text-start">{{ s.name }}</td>
+      {% for d in days %}
+      {% set iso = d.isoformat() %}
+      <td class="att {% if iso in attend[s.id] %}table-success{% endif %}"
+          data-stu="{{ s.id }}" data-date="{{ iso }}">
+        {% if iso in attend[s.id] %}✓{% endif %}
+      </td>
+      {% endfor %}
+      <td class="week-sum fw-semibold">{{ s.week }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+
+  <tfoot>
+    <tr class="table-secondary">
+      <td colspan="{{ days|length + 1 }}" class="text-end fw-bold">Усього:</td>
+      <td id="total">{{ total }}</td>
+    </tr>
+  </tfoot>
+</table>
+
+{% if current_user.role == 'teacher' %}
+<div class="row g-4 mt-4">
+  <!-- Add Student -->
+  <div class="col-md-4">
+    <h4>Новий учень</h4>
+    <form id="addStudent">
+      <div class="input-group">
+        <input class="form-control" name="name" placeholder="Ім'я учня" required>
+        <button class="btn btn-primary">Додати</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Add Song -->
+  <div class="col-md-8">
+    <h4>Нова пісня</h4>
+    <form id="addSong" class="row g-2">
+      <div class="col-md-4"><input class="form-control" name="title"  placeholder="Назва" required></div>
+      <div class="col-md-4"><input class="form-control" name="author" placeholder="Автор" required></div>
+      <div class="col-md-2">
+        <select class="form-select" name="difficulty">
+          {% for i in range(1,5) %}<option value="{{ i }}">{{ '★' * i }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2"><button class="btn btn-success w-100">Додати</button></div>
+    </form>
+  </div>
+</div>
+{% endif %}
+
+<h2 class="mt-5">Список пісень</h2>
+<ul class="list-group" id="songList">
+  {% for t in songs %}
+  <li class="list-group-item d-flex justify-content-between align-items-center">
+    <span>
+      <strong>{{ t.title }}</strong> — {{ t.author }}
+      <span class="badge bg-secondary ms-2">{{ '★' * t.difficulty }}</span>
+    </span>
+    {% if current_user.role == 'teacher' %}
+    <select class="form-select form-select-sm d-inline w-auto ms-3 song-select"
+            data-song-id="{{ t.id }}">
+      <option selected disabled>Призначити учню…</option>
+      {% for s in students %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+    </select>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+
+<script src="{{ url_for('static', filename='app.js') }}" defer></script>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Журнал відвідувань{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/journal.css') }}">
+<script defer src="{{ url_for('static', filename='js/journal.js') }}"></script>
+
+<h2 class="my-3 text-center">Журнал відвідувань – {{ month }} / {{ year }}</h2>
+
+<div class="table-responsive">
+  <table class="table table-bordered align-middle text-center">
+    <thead class="table-light">
+      <tr>
+        <th>Учень</th>
+        {% for d in days %}
+          <th style="width:38px">{{ d.day }}</th>
+        {% endfor %}
+        <th>Сума&nbsp;грн</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in students %}
+      <tr data-student="{{ row.id }}">
+        <th class="text-start">{{ row.name }}</th>
+        {% for d in days %}
+          {% set date_iso = d.isoformat() %}
+          {% set checked = date_iso in attend[row.id] %}
+          <td>
+            <input type="checkbox"
+                   class="form-check-input attend"
+                   data-date="{{ date_iso }}"
+                   {% if checked %}checked{% endif %}/>
+          </td>
+        {% endfor %}
+        <td class="fw-bold sum">{{ row.month_sum }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr class="table-secondary">
+        <th colspan="{{ days|length + 1 }}">Загалом</th>
+        <th id="grand-total">{{ total }}</th>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+{% endblock %}

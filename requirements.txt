@@ -1,0 +1,12 @@
+# requirements.txt  ─ повна версія
+Flask==3.0.3
+Flask-Login==0.6.3
+Flask-WTF==1.2.1
+Flask-SQLAlchemy==3.1.1
+Flask-Migrate==4.0.5           # якщо плануєте міграції
+WTForms==3.1.2
+gunicorn==22.0.0
+gevent==24.2.1                 # async-воркери для Gunicorn
+itsdangerous==2.2.0            # залежність Flask
+Jinja2==3.1.3                  # залежність Flask
+MarkupSafe==2.1.5              # залежність Jinja2

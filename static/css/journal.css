@@ -1,0 +1,5 @@
+/* робимо чекбокси більшими для зручності кліку */
+input.attend {
+  transform: scale(1.25);
+  cursor: pointer;
+}

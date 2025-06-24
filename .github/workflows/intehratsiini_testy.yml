@@ -1,0 +1,27 @@
+name: Інтеграційні тести
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    services:
+      web:
+        image: ghcr.io/goldmonkeypunk/flask-docker-example-test:latest
+        ports: [ '5000:5000' ]
+        options: >-
+          --health-cmd="curl -f http://localhost:5000/ || exit 1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: |
+          pip install -r requirements-dev.txt
+          pytest -q -m integration
