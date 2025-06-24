@@ -15,11 +15,7 @@ from flask import (
     request,
     url_for,
 )
-from flask_login import (
-    LoginManager,
-    current_user,
-    login_required,
-)
+from flask_login import LoginManager, current_user, login_required
 from sqlalchemy import delete
 from werkzeug.security import generate_password_hash
 
