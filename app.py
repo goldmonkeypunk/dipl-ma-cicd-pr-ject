@@ -266,7 +266,7 @@ def seed_initial_data() -> None:
 
     songs_data = [
         ("deluciuos of savior", "Slaer", 1),
-        ("Bluesуtone Aley", "Wei Congfei", 2),
+        ("Bluesуtoe Aley", "Wei Congfei", 2),
         ("memories and dreams", "Sally Face", 1),
         ("come as you are", "Nirvana", 1),
         ("smells like teen spirit", "Nirvana", 1),
