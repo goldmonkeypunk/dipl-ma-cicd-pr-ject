@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 import pytest
+
 from app import app, db
 
 
 @pytest.fixture()
 def client():
-    """Тестовий Flask‑клієнт із чистою БД SQLite in‑memory."""
     app.config.update(
         TESTING=True,
         SQLALCHEMY_DATABASE_URI="sqlite:///:memory:",

@@ -18,15 +18,14 @@ from flask import (
 from flask_login import LoginManager, current_user, login_required
 from sqlalchemy import delete
 from werkzeug.security import generate_password_hash
+from werkzeug.wrappers.response import Response
 
 from models import Attendance, Song, Student, StudentSong, User, db
 
-# ────────────────────────────  КОНСТАНТИ  ─────────────────────────────
 PRICE: int = 130
 DATA_DIR = Path(__file__).resolve().parent / "data"
 DATA_DIR.mkdir(exist_ok=True, parents=True)
 
-# ─────────────────────────────  FLASK APP  ────────────────────────────
 app = Flask(__name__, static_folder="static", template_folder="templates")
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{DATA_DIR / 'app.db'}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -43,13 +42,11 @@ def load_user(uid: str) -> User | None:
     return db.session.get(User, int(uid))
 
 
-# ─────────────────────  ПІДКЛЮЧЕННЯ AUTH BLUEPRINT  ──────────────────
-from auth import bp as auth_bp  # noqa: E402  (підіймаємо після створення app)
+from auth import bp as auth_bp  # noqa: E402
 
 app.register_blueprint(auth_bp)
 
 
-# ─────────────────────────  ДОПОМІЖНІ ФУНКЦІЇ  ────────────────────────
 def month_info(
     year: int, month: int
 ) -> tuple[list[dt.date], dt.date, dt.date]:
@@ -60,7 +57,7 @@ def month_info(
 
 def admin_required() -> None:
     if current_user.role != "teacher":
-        abort(403, "Тільки адміністратор може виконати дію")
+        abort(403)
 
 
 def month_sum(stu_id: int, start: dt.date, end: dt.date) -> int:
@@ -72,13 +69,11 @@ def month_sum(stu_id: int, start: dt.date, end: dt.date) -> int:
     return cnt * PRICE
 
 
-# ─────────────────────────────  ROUTES  ───────────────────────────────
 @app.get("/")
-def root() -> str:
+def root() -> Response:
     return redirect(url_for("journal"))
 
 
-# -------- журнал --------
 @app.get("/journal")
 @login_required
 def journal():
@@ -118,7 +113,6 @@ def journal():
     )
 
 
-# -------- учні --------
 @app.get("/students")
 @login_required
 def students():
@@ -140,14 +134,12 @@ def students():
     )
 
 
-# -------- пісні --------
 @app.get("/songs")
 @login_required
 def songs():
     return render_template("songs.html", songs=Song.query.all())
 
 
-# ─────────────────────────────  API  ───────────────────────────────────
 @app.post("/api/attendance/toggle")
 @login_required
 def toggle_attendance():
@@ -160,7 +152,6 @@ def toggle_attendance():
     else:
         db.session.add(Attendance(student_id=sid, date=d))
     db.session.commit()
-
     _, start, end = month_info(d.year, d.month)
     return jsonify(
         {
@@ -239,17 +230,16 @@ def health():
     return "ok", 200
 
 
-# ──────────────────────────  SEED DATA  ───────────────────────────────
 def seed_initial_data() -> None:
     if User.query.first():
-        return  # база вже заповнена
-
+        return
     admin = User(
         email="teacher@example.com",
         password=generate_password_hash("secret"),
         role="teacher",
     )
     db.session.add(admin)
+    db.session.flush()
 
     pupils = [
         "Діана",
@@ -302,11 +292,9 @@ def seed_initial_data() -> None:
             db.session.add(
                 StudentSong(student_id=sid, song_id=songs[title].id)
             )
-
     db.session.commit()
 
 
-# ─────────────────────────────  MAIN  ─────────────────────────────────
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     with app.app_context():
