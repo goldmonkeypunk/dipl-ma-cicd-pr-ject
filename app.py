@@ -265,7 +265,7 @@ def seed_initial_data() -> None:
     db.session.add_all(students.values())
 
     songs_data = [
-        ("deluciuos of savior", "Slayer", 1),
+        ("deluciuos of savior", "Slaer", 1),
         ("Bluesуtone Alley", "Wei Congfei", 2),
         ("memories and dreams", "Sally Face", 1),
         ("come as you are", "Nirvana", 1),
