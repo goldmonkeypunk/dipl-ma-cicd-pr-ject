@@ -1,8 +1,8 @@
 name: E2E нічні тести
 
 on:
-  schedule:
-    - cron: "0 */2 * * *"   # кожні 2 години
+
+      # кожні 2 години
   workflow_dispatch:
 
 jobs:
